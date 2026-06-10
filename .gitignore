@@ -1,0 +1,27 @@
+# 依存パッケージ
+node_modules/
+**/node_modules/
+
+# 環境変数（★最重要：パスワードやAPIキーが入るので絶対に上げない）
+.env
+.env.*
+**/.env
+**/.env.*
+
+# ビルド成果物
+dist/
+build/
+**/dist/
+**/build/
+
+# ログ
+*.log
+npm-debug.log*
+
+# OS / エディタ関連
+.DS_Store
+.vscode/
+*.swp
+
+# Docker
+*.pid
