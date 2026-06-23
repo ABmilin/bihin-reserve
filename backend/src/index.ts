@@ -1,23 +1,71 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { supabase } from "./supabase";
+import authRouter from "./routes/auth";
+import { requireAuth, requireAdmin } from "./middleware/auth";
+import categoriesRouter from "./routes/categories";
+import itemsRouter from "./routes/items";
+import reservationsRouter from "./routes/reservations";
 
-// .env ファイルから環境変数を読み込む
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// ミドルウェア設定
-app.use(cors());          // フロントとの通信を許可
-app.use(express.json());  // JSONのリクエストを受け取れるように
+app.use(cors());
+app.use(express.json());
 
-// 動作確認用のエンドポイント
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "サーバーは正常に動作しています 🚀" });
+// 認証関連のAPI（/api/auth/register など）
+app.use("/api/auth", authRouter);
+
+app.use("/api/categories", categoriesRouter);
+
+app.use("/api/items", itemsRouter);
+
+app.use("/api/reservations", reservationsRouter);
+
+// 【テスト用】ログインが必要なAPI
+app.get("/api/me", requireAuth, (req: any, res) => {
+  res.json({ message: "ログイン確認OK", user: req.user });
 });
 
-// サーバー起動
+// 【テスト用】管理者だけがアクセスできるAPI
+app.get("/api/admin-only", requireAuth, requireAdmin, (req: any, res) => {
+  res.json({ message: "管理者ページへようこそ！" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", message: "サーバーは正常に動作しています" });
+});
+
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from("_realtime_test_dummy")
+      .select("*")
+      .limit(1);
+
+    const tableNotFound =
+      error &&
+      (error.code === "42P01" ||
+        error.message.includes("Could not find the table"));
+
+    if (error && !tableNotFound) {
+      console.error("Supabase connection error:", error.message);
+      return res.status(500).json({ status: "error", message: error.message });
+    }
+
+    res.json({
+      status: "ok",
+      message: "Supabaseへの接続に成功しました",
+    });
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    res.status(500).json({ status: "error", message: "接続に失敗しました" });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`✅ サーバー起動: http://localhost:${PORT}`);
+  console.log("Server started: http://localhost:" + PORT);
 });
