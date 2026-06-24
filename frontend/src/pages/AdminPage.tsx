@@ -271,10 +271,13 @@ export default function AdminPage() {
               <strong>{u.name}</strong>
               <span style={{ marginLeft: 8, fontSize: "0.85rem", color: "#9ca3af" }}>{u.email}</span>
             </div>
-            <span style={{ fontSize: "0.8rem", padding: "2px 8px", borderRadius: 4,
-              backgroundColor: u.role === "admin" ? "#1d4ed8" : "#374151" }}>
-              {u.role === "admin" ? "管理者" : "一般"}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: "0.8rem", padding: "2px 8px", borderRadius: 4,
+                backgroundColor: u.role === "admin" ? "#1d4ed8" : "#374151" }}>
+                {u.role === "admin" ? "管理者" : "一般"}
+              </span>
+              <Link to={`/admin/users/${u.id}`} style={{ fontSize: "0.85rem", color: "#60a5fa" }}>編集</Link>
+            </div>
           </div>
         ))}
       </section>

@@ -122,4 +122,110 @@ router.get("/users", requireAuth, requireAdmin, async (req, res) => {
   res.json(data);
 });
 
+// 【ユーザー更新】名前・メール・パスワード・ロールを変更（管理者のみ）
+router.put("/users/:id", requireAuth, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password, role } = req.body;
+
+  try {
+    // 対象ユーザーを取得
+    const { data: target } = await supabase
+      .from("users")
+      .select("id, role")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (!target) {
+      return res.status(404).json({ message: "ユーザーが見つかりません" });
+    }
+
+    // 管理者を一般に降格する場合、最後の管理者でないか確認
+    if (target.role === "admin" && role === "user") {
+      const { count } = await supabase
+        .from("users")
+        .select("id", { count: "exact", head: true })
+        .eq("role", "admin");
+
+      if ((count || 0) <= 1) {
+        return res
+          .status(400)
+          .json({ message: "管理者が0人になるため、降格できません" });
+      }
+    }
+
+    // 更新内容を組み立て（入力があった項目だけ更新）
+    const updates: Record<string, string> = {};
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+    if (role) updates.role = role;
+    if (password) {
+      updates.password_hash = await bcrypt.hash(password, 10);
+    }
+
+    const { data, error } = await supabase
+      .from("users")
+      .update(updates)
+      .eq("id", id)
+      .select("id, email, name, role")
+      .single();
+
+    if (error) {
+      // メール重複
+      if (error.code === "23505") {
+        return res.status(409).json({ message: "このメールは既に使われています" });
+      }
+      console.error("ユーザー更新エラー:", error.message);
+      return res.status(500).json({ message: "ユーザーの更新に失敗しました" });
+    }
+
+    res.json({ message: "ユーザーを更新しました", user: data });
+  } catch (err) {
+    console.error("予期しないエラー:", err);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  }
+});
+
+// 【ユーザー削除】（管理者のみ・最後の管理者は削除不可）
+router.delete("/users/:id", requireAuth, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { data: target } = await supabase
+      .from("users")
+      .select("id, role")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (!target) {
+      return res.status(404).json({ message: "ユーザーが見つかりません" });
+    }
+
+    // 管理者を削除する場合、最後の管理者でないか確認
+    if (target.role === "admin") {
+      const { count } = await supabase
+        .from("users")
+        .select("id", { count: "exact", head: true })
+        .eq("role", "admin");
+
+      if ((count || 0) <= 1) {
+        return res
+          .status(400)
+          .json({ message: "管理者が0人になるため、削除できません" });
+      }
+    }
+
+    const { error } = await supabase.from("users").delete().eq("id", id);
+
+    if (error) {
+      console.error("ユーザー削除エラー:", error.message);
+      return res.status(500).json({ message: "ユーザーの削除に失敗しました" });
+    }
+
+    res.json({ message: "ユーザーを削除しました" });
+  } catch (err) {
+    console.error("予期しないエラー:", err);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  }
+});
+
 export default router;

@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
+import UserEditPage from "./pages/UserEditPage";
 
 // ログインしていない人を弾く部品
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -44,6 +45,14 @@ export default function App() {
             element={
               <RequireAdmin>
                 <AdminPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/users/:id"
+            element={
+              <RequireAdmin>
+                <UserEditPage />
               </RequireAdmin>
             }
           />
