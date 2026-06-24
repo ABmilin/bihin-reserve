@@ -13,7 +13,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+// 許可するフロントエンドのURL（環境変数 or ローカル）
+const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
+app.use(cors({ origin: allowedOrigin }));
 app.use(express.json());
 
 // 認証関連のAPI（/api/auth/register など）
