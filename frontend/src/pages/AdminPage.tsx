@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { apiClient } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
@@ -168,7 +169,7 @@ export default function AdminPage() {
         <h1>管理者画面</h1>
         <div>
           <span style={{ marginRight: 12 }}>{user?.name} さん</span>
-          <a href="/app" style={{ marginRight: 12, color: "#60a5fa" }}>予約画面へ</a>
+          <Link to="/app" style={{ marginRight: 12, color: "#60a5fa" }}>予約画面へ</Link>
           <button onClick={logout} style={{ padding: "6px 12px" }}>ログアウト</button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { apiClient } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
@@ -92,7 +93,7 @@ export default function UserPage() {
         <div>
           <span style={{ marginRight: 12 }}>{user?.name} さん</span>
           {user?.role === "admin" && (
-            <a href="/admin" style={{ marginRight: 12, color: "#60a5fa" }}>管理者画面</a>
+               <Link to="/admin" style={{ marginRight: 12, color: "#60a5fa" }}>管理者画面</Link>
           )}
           <button onClick={logout} style={{ padding: "6px 12px" }}>ログアウト</button>
         </div>
