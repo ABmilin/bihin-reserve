@@ -2,13 +2,25 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import UserPage from "./pages/UserPage";
-
+import AdminPage from "./pages/AdminPage";
 
 // ログインしていない人を弾く部品
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
+// 管理者だけを通す部品
+function RequireAdmin({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (user.role !== "admin") {
+    return <Navigate to="/app" replace />;
   }
   return <>{children}</>;
 }
@@ -25,6 +37,14 @@ export default function App() {
               <RequireAuth>
                 <UserPage />
               </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <RequireAdmin>
+                <AdminPage />
+              </RequireAdmin>
             }
           />
           {/* それ以外のURLはログイン画面へ */}

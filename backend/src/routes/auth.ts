@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { supabase } from "../supabase";
+import { requireAuth, requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
@@ -104,6 +105,21 @@ router.post("/login", async (req, res) => {
     console.error("予期しないエラー:", err);
     res.status(500).json({ message: "サーバーエラーが発生しました" });
   }
+});
+
+// 【一覧取得】ユーザー一覧（管理者のみ）
+router.get("/users", requireAuth, requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, email, name, role, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("ユーザー取得エラー:", error.message);
+    return res.status(500).json({ message: "ユーザーの取得に失敗しました" });
+  }
+
+  res.json(data);
 });
 
 export default router;
