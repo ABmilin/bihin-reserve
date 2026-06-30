@@ -31,6 +31,13 @@ router.post("/", requireAuth, async (req: AuthRequest, res) => {
       .json({ message: "item_id, start_time, end_time は必須です" });
   }
 
+  // 利用目的は500文字まで
+  if (purpose && purpose.length > 500) {
+    return res
+      .status(400)
+      .json({ message: "利用目的は500文字以内で入力してください" });
+  }
+
   // 開始 < 終了 のチェック
   if (new Date(start_time) >= new Date(end_time)) {
     return res

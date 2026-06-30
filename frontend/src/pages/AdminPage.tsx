@@ -169,7 +169,8 @@ export default function AdminPage() {
         <h1>管理者画面</h1>
         <div>
           <span style={{ marginRight: 12 }}>{user?.name} さん</span>
-          <Link to="/app" style={{ marginRight: 12, color: "#60a5fa" }}>予約画面へ</Link>
+          <Link to="/admin/reservations" style={{ marginRight: 12, color: "#60a5fa" }}>📋 予約管理</Link>
+          <Link to="/app" style={{ marginRight: 12, color: "#60a5fa" }}>📅 備品を予約</Link>
           <button onClick={logout} style={{ padding: "6px 12px" }}>ログアウト</button>
         </div>
       </div>

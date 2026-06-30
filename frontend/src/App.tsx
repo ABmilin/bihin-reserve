@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import UserEditPage from "./pages/UserEditPage";
+import ReservationAdminPage from "./pages/ReservationAdminPage";
 
 // ログインしていない人を弾く部品
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,14 @@ export default function App() {
             element={
               <RequireAdmin>
                 <UserEditPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/reservations"
+            element={
+              <RequireAdmin>
+                <ReservationAdminPage />
               </RequireAdmin>
             }
           />

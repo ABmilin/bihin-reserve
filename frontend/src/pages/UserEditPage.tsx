@@ -88,7 +88,7 @@ export default function UserEditPage() {
     <div style={{ maxWidth: 500, margin: "20px auto", padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>ユーザー編集</h1>
-        <Link to="/admin" style={{ color: "#60a5fa" }}>← 管理者画面へ戻る</Link>
+        <Link to="/admin" style={{ color: "#60a5fa" }}>← ⚙️ 管理者画面へ</Link>
       </div>
 
       {message && <p style={{ color: "#fbbf24" }}>{message}</p>}
